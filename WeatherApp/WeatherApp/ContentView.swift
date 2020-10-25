@@ -37,16 +37,18 @@ struct Condition: Decodable {
     let code: Int
 }
 
+
 struct Weather : Decodable {
 let location : Location?
 let current : Current?
 let condition : Condition?
+
 }
 
 
 struct ContentView: View {
-    @State var city = "Los_Angeles"
-    @State var url = "https://api.weatherapi.com/v1/current.json?key=c87b24d88b154db3a1f104416200610&q="
+    @State var city = "Los Angeles"
+    @State var url = "https://api.weatherapi.com/v1/forecast.json?key=c87b24d88b154db3a1f104416200610&q="
     @State var temperature = 0.0
     @State var description = ""
     @State var getTemp = false
@@ -64,7 +66,8 @@ struct ContentView: View {
     @State var text = ""
     
     func getWeatherData() {
-        let link = "\(self.url)"+"\(city)"
+        let replaced = city.replacingOccurrences(of: " ", with: "_")
+        let link = "\(self.url)"+"\(replaced)"+"&days=5"
         let jsonURLString = "\(link)"
     // make URL
     guard let url = URL(string: jsonURLString) else { return }
@@ -103,10 +106,8 @@ struct ContentView: View {
         ZStack {
             Color("appBlue")
                 .edgesIgnoringSafeArea(.vertical)
-        VStack {
+            VStack (alignment: .center) {
             
-  //      Text("\(self.localtime)")
-  //          .padding(.bottom)
                 TextField("Enter city", text: $city,
                           onEditingChanged: { edit in
                             self.getWeatherData()
@@ -114,11 +115,11 @@ struct ContentView: View {
                           onCommit: {
                             self.getWeatherData()
                           }).padding(.top, 100)
-            if getTemp {
-                Text("\(self.city)")
-                .opacity(0.6)
-  //      .foregroundColor(Color.black)
-        Text("\(self.temperature, specifier: "%.0f")°C")
+                    .foregroundColor(.white)
+                        .opacity(0.6)
+                    .multilineTextAlignment(TextAlignment.center)
+
+                Text("\(self.temperature, specifier: "%.0f")°C")
             .font(.system(size: 50, design: .rounded))
             .foregroundColor(Color.white)
             .padding(.bottom, -10)
@@ -128,6 +129,7 @@ struct ContentView: View {
                 .padding(.bottom, -10)
             Text(self.condition)
             .opacity(0.6)
+                .foregroundColor(.white)
             .padding(.bottom, 200)
             
             VStack{
@@ -169,7 +171,9 @@ struct ContentView: View {
                         .frame(width: 60)
                     Image(systemName: "cloud")
                         .frame(width: 60)
-                } //.opacity(0.4)
+                }
+                
+                    //.opacity(0.4)
     //    Text("UV index: \(self.uv, specifier: "%.1f")")
    //     Text("Humidity: \(self.humidity)%")
    //     Text("Pressure: \(self.pressure, specifier: "%.0f")")
@@ -190,7 +194,7 @@ struct ContentView: View {
         }
         }
     }
-}
+
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
